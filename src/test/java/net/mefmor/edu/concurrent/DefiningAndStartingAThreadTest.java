@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Demo for The Java Tutorials:
+ * Demo for The Java Tutorial:
  * <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/runthread.html">Defining and Starting a Thread</a>
  */
 public class DefiningAndStartingAThreadTest {

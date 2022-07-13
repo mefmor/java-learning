@@ -3,7 +3,10 @@ package net.mefmor.edu.concurrent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ThreadInterruptingTest {
+import java.util.concurrent.TimeUnit;
+
+
+public class ThreadStatesTest {
 
     private static class InfinityThread extends Thread {
         @Override
@@ -48,5 +51,22 @@ public class ThreadInterruptingTest {
         Assertions.assertTrue(thread.isInterrupted());
         Assertions.assertEquals(Thread.State.TERMINATED, thread.getState());
         Assertions.assertFalse(thread.isAlive());
+    }
+
+    @Test
+    void testTimedWaitingStatus() throws InterruptedException {
+        Runnable runnable = () -> {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        var thread = new Thread(runnable);
+        thread.start();
+        Thread.sleep(500);
+
+        Assertions.assertEquals(Thread.State.TIMED_WAITING, thread.getState());
     }
 }
