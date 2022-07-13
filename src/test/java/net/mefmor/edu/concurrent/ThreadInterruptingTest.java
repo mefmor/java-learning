@@ -8,8 +8,9 @@ public class ThreadInterruptingTest {
     private static class InfinityThread extends Thread {
         @Override
         public void run() {
+            //noinspection StatementWithEmptyBody
             while (!isInterrupted()) {
-                System.out.println("I'm alive!");
+
             }
         }
     }
