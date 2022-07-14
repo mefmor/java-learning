@@ -11,9 +11,8 @@ public class ThreadStatesTest {
     private static class InfinityThread extends Thread {
         @Override
         public void run() {
-            //noinspection StatementWithEmptyBody
             while (!isInterrupted()) {
-
+                Thread.onSpinWait();
             }
         }
     }
