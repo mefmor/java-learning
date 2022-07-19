@@ -68,4 +68,37 @@ public class ThreadStatesTest {
 
         Assertions.assertEquals(Thread.State.TIMED_WAITING, thread.getState());
     }
+
+    private static class ThreadWithCommonResource extends Thread {
+        static volatile boolean interrupted = false;
+        @Override
+        public void run() {
+            commonResource();
+        }
+
+        private static synchronized void commonResource() {
+            while (!interrupted) {
+                Thread.onSpinWait();
+            }
+        }
+    }
+
+    @Test
+    void testBlockThreadState() throws InterruptedException {
+        Thread t1 = new ThreadWithCommonResource();
+        Thread t2 = new ThreadWithCommonResource();
+
+        t1.start();
+        t2.start();
+        t1.join(200);
+        t2.join(200);
+
+        Assertions.assertEquals(Thread.State.RUNNABLE, t1.getState());
+        Assertions.assertEquals(Thread.State.BLOCKED, t2.getState());
+        ThreadWithCommonResource.interrupted = true;
+        t1.join();
+        t2.join();
+    }
+
+
 }
