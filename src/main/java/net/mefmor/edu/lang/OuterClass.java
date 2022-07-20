@@ -41,5 +41,14 @@ public class OuterClass {
         System.out.println("--------------------");
         TopLevelClass topLevelObject = new TopLevelClass();
         topLevelObject.accessMembers(outerObject);
+
+        System.out.println("\nLocal class:");
+        System.out.println("--------------------");
+        class LocalClass {
+            LocalClass() {
+                System.out.println("Hello, local!");
+            }
+        }
+        new LocalClass();
     }
 }
