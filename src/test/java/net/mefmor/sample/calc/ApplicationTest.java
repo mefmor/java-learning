@@ -13,7 +13,6 @@ import java.io.PrintStream;
 public class ApplicationTest {
     private final InputStream defaultIn = System.in;
     private final PrintStream defaultOut = System.out;
-
     private final PrintStream defaultError = System.err;
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();

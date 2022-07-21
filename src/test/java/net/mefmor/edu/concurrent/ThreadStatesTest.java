@@ -8,19 +8,20 @@ import java.util.concurrent.TimeUnit;
 
 public class ThreadStatesTest {
 
-    private static class InfinityThread extends Thread {
-        @Override
-        public void run() {
-            while (!isInterrupted()) {
-                Thread.onSpinWait();
-            }
+    private final Thread thread = new Thread(() -> {
+        while (!Thread.interrupted()) {
+            Thread.onSpinWait();
         }
-    }
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    });
 
     @Test
     void testNewThreadDefaultState() {
-        var thread = new InfinityThread();
-
         Assertions.assertEquals(Thread.State.NEW, thread.getState());
         Assertions.assertFalse(thread.isAlive());
         Assertions.assertFalse(thread.isInterrupted());
@@ -28,9 +29,8 @@ public class ThreadStatesTest {
 
     @Test
     void testStartedThread() throws InterruptedException {
-        var thread = new InfinityThread();
-
         thread.start();
+
         Assertions.assertEquals(Thread.State.RUNNABLE, thread.getState());
         Assertions.assertTrue(thread.isAlive());
         Assertions.assertFalse(thread.isInterrupted());
@@ -41,15 +41,15 @@ public class ThreadStatesTest {
 
     @Test
     void testInterruptedThread() throws InterruptedException {
-        var thread = new InfinityThread();
-
         thread.start();
+
         thread.interrupt();
-        thread.join();
 
         Assertions.assertTrue(thread.isInterrupted());
+        thread.join();
         Assertions.assertEquals(Thread.State.TERMINATED, thread.getState());
         Assertions.assertFalse(thread.isAlive());
+        Assertions.assertFalse(thread.isInterrupted());
     }
 
     @Test
@@ -70,14 +70,13 @@ public class ThreadStatesTest {
     }
 
     private static class ThreadWithCommonResource extends Thread {
-        static volatile boolean interrupted = false;
         @Override
         public void run() {
             commonResource();
         }
 
         private static synchronized void commonResource() {
-            while (!interrupted) {
+            while (!Thread.interrupted()) {
                 Thread.onSpinWait();
             }
         }
@@ -95,7 +94,8 @@ public class ThreadStatesTest {
 
         Assertions.assertEquals(Thread.State.RUNNABLE, t1.getState());
         Assertions.assertEquals(Thread.State.BLOCKED, t2.getState());
-        ThreadWithCommonResource.interrupted = true;
+        t1.interrupt();
+        t2.interrupt();
         t1.join();
         t2.join();
     }
